@@ -1,0 +1,2237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anish Thapa | Creative Technologist</title>
+    <meta name="description" content="Creative Technologist specializing in motion design, web development, and storytelling. Blending Motion, Code & Storytelling.">
+   
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+ 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-bg: #0a0a0f;
+            --secondary-bg: #12121a;
+            --accent-cyan: #00fff5;
+            --accent-purple: #b026ff;
+            --accent-pink: #ff0080;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b8;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        
+        
+        .cursor {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--accent-cyan);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: transform 0.2s ease, width 0.3s ease, height 0.3s ease;
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .cursor {
+                display: block;
+            }
+        }
+        
+        .cursor.hover {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 255, 245, 0.1);
+        }
+        
+        
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1.5rem 3rem;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+        
+        nav.scrolled {
+            padding: 1rem 3rem;
+            background: rgba(10, 10, 15, 0.95);
+        }
+        
+        .nav-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-photo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-cyan);
+            object-fit: cover;
+            box-shadow: 0 5px 20px rgba(0, 255, 245, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .logo-photo:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 30px rgba(0, 255, 245, 0.5);
+        }
+        
+        .logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-purple));
+            transition: width 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .mobile-menu-btn span {
+            width: 30px;
+            height: 2px;
+            background: var(--accent-cyan);
+            transition: all 0.3s ease;
+        }
+        
+        
+        #hero {
+            height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 1200px;
+            padding: 2rem;
+        }
+        
+        .hero-subtitle {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 4px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.2s;
+        }
+        
+        .hero-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.4s;
+        }
+        
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-purple) 50%, var(--accent-pink) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+        
+        .hero-tagline {
+            font-size: clamp(1.2rem, 2.5vw, 2rem);
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.6s;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 0.8s;
+        }
+        
+        .btn {
+            padding: 1.2rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            border: none;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: var(--primary-bg);
+            box-shadow: 0 10px 40px rgba(0, 255, 245, 0.3);
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+            transition: left 0.4s ease;
+        }
+        
+        .btn-primary:hover::before {
+            left: 0;
+        }
+        
+        .btn-primary span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-secondary {
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 40px rgba(0, 255, 245, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+        }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            opacity: 0;
+            animation: fadeInUp 1s ease forwards 1s;
+        }
+        
+        .scroll-indicator::before {
+            content: '';
+            width: 2px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--accent-cyan), transparent);
+            display: block;
+            margin: 0 auto 1rem;
+            animation: scroll 2s ease-in-out infinite;
+        }
+        
+        @keyframes scroll {
+            0%, 100% { transform: translateY(0); opacity: 0; }
+            50% { transform: translateY(20px); opacity: 1; }
+        }
+        
+        .scroll-indicator span {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+        
+        
+        section {
+            padding: 8rem 3rem;
+            position: relative;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+        
+        .section-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+        
+        
+        #about {
+            background: linear-gradient(180deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+        }
+        
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+        
+        .about-text h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-cyan);
+        }
+        
+        .about-text p {
+            font-size: 1.1rem;
+            line-height: 1.9;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .stat-item {
+            background: var(--glass-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 40px rgba(0, 255, 245, 0.1);
+        }
+        
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .skills-visual {
+            position: relative;
+            height: 500px;
+        }
+        
+        .skill-orb {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 1rem;
+            box-shadow: 0 20px 60px rgba(0, 255, 245, 0.3);
+            transition: all 0.3s ease;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .skill-orb:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .skill-orb:nth-child(2) {
+            top: 20%;
+            right: 15%;
+            width: 120px;
+            height: 120px;
+            animation-delay: 1s;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+        }
+        
+        .skill-orb:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            width: 180px;
+            height: 180px;
+            animation-delay: 2s;
+        }
+        
+        .skill-orb:nth-child(4) {
+            bottom: 15%;
+            right: 10%;
+            width: 140px;
+            height: 140px;
+            animation-delay: 1.5s;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-cyan));
+        }
+        
+        .skill-orb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 30px 80px rgba(0, 255, 245, 0.5);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        
+        #services {
+            background: var(--primary-bg);
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+        
+        .service-card {
+            background: var(--glass-bg);
+            padding: 3rem;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 245, 0.1), rgba(176, 38, 255, 0.1));
+            transition: left 0.5s ease;
+        }
+        
+        .service-card:hover::before {
+            left: 0;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 20px 60px rgba(0, 255, 245, 0.2);
+        }
+        
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-card h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-card p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-features {
+            list-style: none;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-features li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .service-features li::before {
+            content: '→';
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+        
+    
+        #work {
+            background: linear-gradient(180deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+        }
+        
+        .work-filters {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 1rem 2rem;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 50px;
+            color: var(--text-secondary);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-color: transparent;
+            color: var(--primary-bg);
+            box-shadow: 0 10px 30px rgba(0, 255, 245, 0.3);
+        }
+        
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 3rem;
+        }
+        
+        .work-item {
+            background: var(--glass-bg);
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            transition: all 0.5s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .work-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 80px rgba(0, 255, 245, 0.2);
+        }
+        
+        .work-thumbnail {
+            width: 100%;
+            height: 350px;
+            background: linear-gradient(135deg, rgba(0, 255, 245, 0.2), rgba(176, 38, 255, 0.2));
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .work-thumbnail::after {
+            content: 'VIEW PROJECT';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 255, 245, 0.9);
+            color: var(--primary-bg);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 2px;
+        }
+        
+        .work-item.video-project .work-thumbnail::before {
+            content: '▶';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: white;
+            z-index: 1;
+            opacity: 0.9;
+            text-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .work-item.video-project:hover .work-thumbnail::before {
+            opacity: 0;
+        }
+        
+        .work-item:hover .work-thumbnail::after {
+            opacity: 1;
+        }
+        
+        .work-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+        
+        .work-item:hover .work-thumbnail img {
+            transform: scale(1.1);
+            filter: brightness(0.7);
+        }
+        
+        .work-info {
+            padding: 2.5rem;
+        }
+        
+        .work-category {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+        
+        .work-info h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        
+        .work-info p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .work-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: rgba(0, 255, 245, 0.1);
+            color: var(--accent-cyan);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(0, 255, 245, 0.2);
+        }
+        
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.98);
+            z-index: 2000;
+            backdrop-filter: blur(20px);
+            overflow-y: auto;
+        }
+        
+        .modal.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            max-width: 1400px;
+            margin: 5rem auto;
+            padding: 3rem;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            z-index: 2001;
+        }
+        
+        .modal-close:hover {
+            background: var(--accent-cyan);
+            color: var(--primary-bg);
+            transform: rotate(90deg);
+        }
+        
+        .modal-hero {
+            width: 100%;
+            height: 600px;
+            background: linear-gradient(135deg, rgba(0, 255, 245, 0.2), rgba(176, 38, 255, 0.2));
+            border-radius: 30px;
+            margin-bottom: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            overflow: hidden;
+        }
+        
+        .modal-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .modal-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .modal-meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .modal-meta-item {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .modal-meta-item strong {
+            color: var(--accent-cyan);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .modal-description {
+            font-size: 1.2rem;
+            line-height: 1.9;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+        }
+        
+        
+        #process {
+            background: var(--primary-bg);
+        }
+        
+        .process-timeline {
+            position: relative;
+            padding: 2rem 0;
+        }
+        
+        .process-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-purple), var(--accent-pink));
+            transform: translateX(-50%);
+        }
+        
+        .process-step {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            margin-bottom: 5rem;
+            position: relative;
+        }
+        
+        .process-step:nth-child(even) .step-content {
+            order: 2;
+        }
+        
+        .process-step:nth-child(even) .step-number-container {
+            order: 1;
+        }
+        
+        .step-number-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        
+        .process-step:nth-child(even) .step-number-container {
+            justify-content: flex-start;
+        }
+        
+        .step-number {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            box-shadow: 0 20px 60px rgba(0, 255, 245, 0.4);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .step-content {
+            background: var(--glass-bg);
+            padding: 3rem;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+        
+        .step-content h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--accent-cyan);
+        }
+        
+        .step-content p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+        
+        
+        #contact {
+            background: linear-gradient(180deg, var(--primary-bg) 0%, var(--secondary-bg) 100%);
+        }
+        
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+        }
+        
+        .contact-info h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .contact-info p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 3rem;
+        }
+        
+        .contact-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .contact-method {
+            background: var(--glass-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+        
+        .contact-method:hover {
+            transform: translateX(10px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 10px 40px rgba(0, 255, 245, 0.2);
+        }
+        
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .contact-method-info h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .contact-method-info p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin: 0;
+        }
+        
+        .contact-form {
+            background: var(--glass-bg);
+            padding: 3rem;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 255, 245, 0.2);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        
+        footer {
+            background: var(--primary-bg);
+            padding: 3rem;
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+        }
+        
+        .footer-content {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .footer-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-text {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .social-link {
+            width: 50px;
+            height: 50px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+        
+        .social-link:hover {
+            background: var(--accent-cyan);
+            color: var(--primary-bg);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 245, 0.3);
+        }
+        
+        .copyright {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        
+        @media (max-width: 1024px) {
+            .about-content,
+            .contact-container,
+            .process-timeline::before {
+                grid-template-columns: 1fr;
+            }
+            
+            .process-timeline::before {
+                left: 30px;
+            }
+            
+            .process-step {
+                grid-template-columns: auto 1fr;
+                gap: 2rem;
+            }
+            
+            .process-step:nth-child(even) .step-content {
+                order: 1;
+            }
+            
+            .process-step:nth-child(even) .step-number-container {
+                order: 0;
+            }
+            
+            .step-number-container {
+                justify-content: flex-start !important;
+            }
+            
+            .step-number {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .skills-visual {
+                height: 400px;
+                margin-top: 3rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem 1.5rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            section {
+                padding: 5rem 1.5rem;
+            }
+            
+            .services-grid,
+            .work-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .work-item {
+                min-width: 100%;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .modal-content {
+                padding: 2rem 1.5rem;
+                margin: 3rem auto;
+            }
+            
+            .modal-hero {
+                height: 300px;
+            }
+            
+            .about-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-screen.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loader {
+            width: 100px;
+            height: 100px;
+            border: 3px solid var(--glass-border);
+            border-top: 3px solid var(--accent-cyan);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="cursor"></div>
+    
+    
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+    </div>
+    
+    
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cdefs%3E%3ClinearGradient id='avatarGrad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2300fff5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23b026ff;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='50' fill='url(%23avatarGrad)'/%3E%3Ctext x='50' y='65' font-family='Arial' font-size='40' font-weight='bold' fill='white' text-anchor='middle'%3EAT%3C/text%3E%3C/svg%3E" alt="Anish Thapa" class="logo-photo" id="logoPhoto">
+                <span class="logo-text">ANISH</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#work">Work</a></li>
+                <li><a href="#process">Process</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <button class="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section id="hero">
+        <div id="canvas-container"></div>
+        <div class="hero-content">
+            <div class="hero-subtitle">CREATIVE TECHNOLOGIST</div>
+            <h1 class="hero-title">
+                <span class="gradient-text">Anish Thapa</span>
+            </h1>
+            <p class="hero-tagline">Blending Motion, Code & Storytelling</p>
+            <div class="cta-buttons">
+                <a href="#work" class="btn btn-primary"><span>View My Work</span></a>
+                <a href="#contact" class="btn btn-secondary">Let's Talk</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll Down</span>
+        </div>
+    </section>
+    
+    <!-- About Section -->
+    <section id="about">
+        <div class="section-header">
+            <div class="section-label">Who I Am</div>
+            <h2 class="section-title">Creative Technologist</h2>
+            <p class="section-description">
+                I craft digital experiences that merge cutting-edge motion design with functional web development, 
+                creating stories that captivate and convert.
+            </p>
+        </div>
+        
+        <div class="about-content">
+            <div class="about-text">
+                <h3>My Journey</h3>
+                <p>
+                    As a Creative Technologist, I bridge the gap between artistic vision and technical execution. 
+                    My work spans from high-energy short-form content that stops thumbs mid-scroll to immersive 
+                    web experiences that turn visitors into customers.
+                </p>
+                <p>
+                    Whether it's crafting viral-worthy Reels for YouTubers, designing conversion-focused landing 
+                    pages for SaaS companies, or building custom digital solutions for restaurants, I bring a 
+                    unique blend of creativity and technical precision to every project.
+                </p>
+                <p>
+                    My approach combines cinematic storytelling, motion graphics mastery, and modern web technologies 
+                    to deliver results that don't just look amazing—they perform.
+                </p>
+                
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Projects Delivered</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">30+</span>
+                        <span class="stat-label">Happy Clients</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">5+</span>
+                        <span class="stat-label">Years Experience</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Satisfaction Rate</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="skills-visual">
+                <div class="skill-orb">Motion Graphics</div>
+                <div class="skill-orb">Web Development</div>
+                <div class="skill-orb">3D Animation</div>
+                <div class="skill-orb">UI/UX Design</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Section -->
+    <section id="services">
+        <div class="section-header">
+            <div class="section-label">What I Do</div>
+            <h2 class="section-title">Services</h2>
+            <p class="section-description">
+                From viral content to high-converting websites, I deliver end-to-end creative solutions 
+                that drive real business results.
+            </p>
+        </div>
+        
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">🎬</div>
+                <h3>Short-Form Content</h3>
+                <p>
+                    Explosive Reels, TikToks, and YouTube Shorts designed to stop the scroll and drive engagement. 
+                    Perfect for YouTubers looking to expand their reach.
+                </p>
+                <ul class="service-features">
+                    <li>Viral-optimized editing</li>
+                    <li>Platform-specific formatting</li>
+                    <li>Trend integration</li>
+                    <li>Fast turnaround</li>
+                </ul>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">✨</div>
+                <h3>Motion Graphics & VFX</h3>
+                <p>
+                    Eye-catching visual effects and motion graphics that elevate your content from good to unforgettable. 
+                    Stand out in a crowded digital landscape.
+                </p>
+                <ul class="service-features">
+                    <li>Custom animations</li>
+                    <li>Logo animations</li>
+                    <li>Visual effects compositing</li>
+                    <li>3D elements integration</li>
+                </ul>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">🚀</div>
+                <h3>High-Conversion Landing Pages</h3>
+                <p>
+                    Beautiful, fast-loading landing pages engineered for conversion. Ideal for SaaS companies 
+                    looking to turn traffic into customers.
+                </p>
+                <ul class="service-features">
+                    <li>Conversion-focused design</li>
+                    <li>Mobile-first approach</li>
+                    <li>Performance optimized</li>
+                    <li>A/B testing ready</li>
+                </ul>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">📱</div>
+                <h3>Interactive Digital Menus</h3>
+                <p>
+                    Modern, interactive menu systems that enhance the dining experience and streamline operations 
+                    for restaurants of all sizes.
+                </p>
+                <ul class="service-features">
+                    <li>QR code integration</li>
+                    <li>Real-time updates</li>
+                    <li>Multi-language support</li>
+                    <li>Beautiful imagery</li>
+                </ul>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">⚙️</div>
+                <h3>Custom Restaurant Systems</h3>
+                <p>
+                    Tailored management systems for restaurants, from inventory tracking to order management, 
+                    designed to boost efficiency and profits.
+                </p>
+                <ul class="service-features">
+                    <li>Inventory management</li>
+                    <li>Order processing</li>
+                    <li>Analytics dashboard</li>
+                    <li>Staff management</li>
+                </ul>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-icon">💼</div>
+                <h3>Complete Brand Solutions</h3>
+                <p>
+                    End-to-end digital solutions combining video, web, and motion design to build cohesive 
+                    brand experiences that resonate.
+                </p>
+                <ul class="service-features">
+                    <li>Brand strategy</li>
+                    <li>Visual identity</li>
+                    <li>Content creation</li>
+                    <li>Digital presence</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Work Section -->
+    <section id="work">
+        <div class="section-header">
+            <div class="section-label">Portfolio</div>
+            <h2 class="section-title">Featured Work</h2>
+            <p class="section-description">
+                A showcase of real projects and high-end concepts that demonstrate the fusion of creativity, 
+                technology, and strategic thinking.
+            </p>
+        </div>
+        
+        <div class="work-filters">
+            <button class="filter-btn active" data-filter="all">All Projects</button>
+            <button class="filter-btn" data-filter="video">Video Editing</button>
+            <button class="filter-btn" data-filter="web">Web Development</button>
+            <button class="filter-btn" data-filter="motion">Motion Graphics</button>
+            <button class="filter-btn" data-filter="concept">Concepts</button>
+        </div>
+        
+        <div class="work-grid" id="workGrid"></div>
+    </section>
+    
+    <!-- Process Section -->
+    <section id="process">
+        <div class="section-header">
+            <div class="section-label">How I Work</div>
+            <h2 class="section-title">My Process</h2>
+            <p class="section-description">
+                A proven methodology that ensures exceptional results, clear communication, and projects 
+                delivered on time and on budget.
+            </p>
+        </div>
+        
+        <div class="process-timeline">
+            <div class="process-step">
+                <div class="step-number-container">
+                    <div class="step-number">01</div>
+                </div>
+                <div class="step-content">
+                    <h3>Discovery & Strategy</h3>
+                    <p>
+                        We start with a deep dive into your goals, target audience, and competitive landscape. 
+                        I analyze what works in your industry and develop a strategic approach tailored to your 
+                        unique needs. This foundation ensures every creative decision is driven by data and purpose.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number-container">
+                    <div class="step-number">02</div>
+                </div>
+                <div class="step-content">
+                    <h3>Concept & Design</h3>
+                    <p>
+                        Armed with strategic insights, I create compelling concepts that blend creativity with 
+                        functionality. Whether it's storyboarding a video or wireframing a website, this phase 
+                        focuses on visualizing ideas and getting your feedback before production begins.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number-container">
+                    <div class="step-number">03</div>
+                </div>
+                <div class="step-content">
+                    <h3>Production & Development</h3>
+                    <p>
+                        This is where the magic happens. Using industry-leading tools and techniques, I bring 
+                        concepts to life with meticulous attention to detail. Every frame, every line of code, 
+                        and every animation is crafted to meet the highest standards of quality.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number-container">
+                    <div class="step-number">04</div>
+                </div>
+                <div class="step-content">
+                    <h3>Review & Refinement</h3>
+                    <p>
+                        Your feedback is crucial. I present the work for your review and make necessary adjustments 
+                        to ensure it exceeds expectations. This iterative process guarantees the final product 
+                        perfectly aligns with your vision and objectives.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="process-step">
+                <div class="step-number-container">
+                    <div class="step-number">05</div>
+                </div>
+                <div class="step-content">
+                    <h3>Delivery & Support</h3>
+                    <p>
+                        Final deliverables are provided in all necessary formats, optimized for their intended 
+                        platforms. I also offer post-launch support to ensure smooth implementation and address 
+                        any questions or adjustments needed.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="section-header">
+            <div class="section-label">Get In Touch</div>
+            <h2 class="section-title">Let's Create Together</h2>
+            <p class="section-description">
+                Ready to bring your vision to life? Let's discuss how we can collaborate to create 
+                something extraordinary.
+            </p>
+        </div>
+        
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Let's Talk</h3>
+                <p>
+                    Whether you're a YouTuber looking to scale, a SaaS company needing a killer landing page, 
+                    or a restaurant wanting to modernize—I'm here to help. Reach out and let's start the conversation.
+                </p>
+                
+                <div class="contact-methods">
+                    <a href="https://wa.me/9779706984499" class="contact-method" target="_blank">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-method-info">
+                            <h4>WhatsApp</h4>
+                            <p>+977 970-6984499</p>
+                        </div>
+                    </a>
+                    
+                    <a href="mailto:561814123@gmail.com" class="contact-method">
+                        <div class="contact-icon">📧</div>
+                        <div class="contact-method-info">
+                            <h4>Email</h4>
+                            <p>561814123@gmail.com</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <form class="contact-form" id="contactForm">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="project">Project Type</label>
+                    <input type="text" id="project" name="project" placeholder="e.g., Landing Page, Video Editing">
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Tell Me About Your Project</label>
+                    <textarea id="message" name="message" required></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;"><span>Send Message</span></button>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">ANISH THAPA</div>
+            <p class="footer-text">Creative Technologist | Blending Motion, Code & Storytelling</p>
+            
+            <div class="social-links">
+                <a href="#" class="social-link">🎬</a>
+                <a href="#" class="social-link">💼</a>
+                <a href="#" class="social-link">📸</a>
+                <a href="#" class="social-link">🐦</a>
+            </div>
+            
+            <p class="copyright">&copy; 2026 Anish Thapa. All rights reserved.</p>
+        </div>
+    </footer>
+    
+    <!-- Modal -->
+    <div class="modal" id="projectModal">
+        <div class="modal-close" onclick="closeModal()">×</div>
+        <div class="modal-content" id="modalContent"></div>
+    </div>
+    
+    <script>
+        // Portfolio Data
+        const portfolioItems = [
+            {
+                id: 1,
+                title: "TechFlow SaaS Landing Page",
+                category: "Web Development",
+                description: "A high-conversion landing page for a cutting-edge SaaS platform, featuring interactive 3D elements and smooth scroll animations that increased conversion rates by 45%.",
+                tags: ["React", "Three.js", "GSAP", "Tailwind"],
+                type: "web",
+                filterCategory: "web",
+                thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='grad1' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2300fff5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23b026ff;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23grad1)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='48' fill='white' text-anchor='middle' dominant-baseline='middle'%3ETechFlow SaaS%3C/text%3E%3C/svg%3E",
+                fullDescription: "Created a modern, conversion-optimized landing page for TechFlow, a B2B SaaS platform. The project featured interactive 3D product visualizations, smooth parallax scrolling, and micro-animations that guide users through the conversion funnel. Implemented A/B testing infrastructure and performance optimizations that resulted in sub-2-second load times. The page achieved a 45% increase in conversion rate compared to the previous design and reduced bounce rate by 30%.",
+                client: "TechFlow Inc.",
+                duration: "1 week",
+                year: "2025",
+                videoUrl: null
+            },
+            {
+                id: 2,
+                title: "Physicological Reprogramming(Talking head + Motion graphics)",
+                category: "Video Editing",
+                description: "Produced a high impact, shortform motivational video focused on psychological reprogramming and mindset shifts. The edit features a fast paced talking head style integrated with symbolic B-roll, including custom motion graphics and automation brain overlays. The project involved synchronized,color coded dynamic captions to maximize viewer retention and high energy sound design to drive the narrative. By utilizing rapid cuts and glitch transitions, the video maintains a high engagement rate suitable forplatforms like Tiktik, Instagram Reels and youtube shorts. ",
+                tags: ["After Effects", "Premiere Pro", "Sound Design", "VFX"],
+                type: "video",
+                filterCategory: "video",
+                thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='grad2' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff0080;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23b026ff;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23grad2)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='48' fill='white' text-anchor='middle' dominant-baseline='middle'%3EGaming Montage%3C/text%3E%3C/svg%3E",
+                fullDescription: " Produced a high impact, shortform motivational video focused on psychological reprogramming and mindset shifts. The edit features a fast paced talking head style integrated with symbolic B-roll, including custom motion graphics and automation brain overlays. The project involved synchronized,color coded dynamic captions to maximize viewer retention and high energy sound design to drive the narrative. By utilizing rapid cuts and glitch transitions, the video maintains a high engagement rate suitable forplatforms like Tiktik, Instagram Reels and youtube shorts. ",
+                client: "Personal Development influencer (YouTube)",
+                duration: "1 minute",
+                year: "2025",
+                videoUrl: "1.mp4"
+            },
+            {
+                id: 3,
+                title: "Luxe Bistro Digital Menu System",
+                category: "Web Development",
+                description: "An elegant, interactive digital menu system with QR code integration and real-time updates, transforming the dining experience for a high-end restaurant.",
+                tags: ["Next.js", "Node.js", "MongoDB", "QR Codes"],
+                type: "web",
+                filterCategory: "web",
+                thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='grad3' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2300fff5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff0080;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23grad3)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='48' fill='white' text-anchor='middle' dominant-baseline='middle'%3ELuxe Bistro Menu%3C/text%3E%3C/svg%3E",
+                fullDescription: "Developed a comprehensive digital menu solution for Luxe Bistro, featuring beautiful food photography, detailed descriptions, and dietary information. The system includes an admin panel for real-time menu updates, pricing changes, and availability management. Implemented QR code scanning for contactless menu access, multi-language support for international guests, and analytics to track popular dishes. The solution reduced printing costs by 90% and improved customer satisfaction scores by 25%.",
+                client: "Luxe Bistro",
+                duration: "4 weeks",
+                year: "2025",
+                videoUrl: null
+            },
+            {
+                id: 4,
+                title: " The Shift In Global Currency",
+                category: "Finance and Geopolitics",
+                description: "This video explains the recent geopolitical shifts regarding the US dollar's supremacy. It highlights Saudi Arabia’s decision to end its exclusive oil-for-dollars deal with the US, moving toward a multi-currency model, and Russia's efforts to decouple its stock market from US dollar dependency.",
+                tags: ["Finance", "Geopolitics", "USdollar", "Russia"],
+                type: "motion",
+                filterCategory: "motion",
+                thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='grad4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23b026ff;stop-opacity:1' /%3E%3Cstop offset='50%25' style='stop-color:%2300fff5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff0080;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23grad4)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='48' fill='white' text-anchor='middle' dominant-baseline='middle'%3ENeuroAI Launch%3C/text%3E%3C/svg%3E",
+                fullDescription: "In this high-paced explainer, I transformed complex geopolitical developments into a visually engaging 34-second short. The edit focuses on the shifting global economic landscape, specifically the historic move by Saudi Arabia and Russia to decouple from the US Dollar. Through dynamic motion graphics, kinetic typography, and compelling B-roll footage, the video breaks down the implications of these changes for global markets. The narrative is supported by a blend of authoritative voiceover and sound design that emphasizes the gravity of the situation. This project showcases my ability to distill intricate topics into digestible, impactful content suitable for platforms like YouTube and social media.",
+                client: "Educational influencer(Youtube)",
+                duration: "34 seconds",
+                year: "2026",
+                videoUrl: "2 (1).mp4"
+            },
+            {
+                id: 5,
+                title: "lead generation Masterclass",
+                category: "Video Editing",
+                description: "Engineered a comprehensive introductory video for a Google Ads lead Generation Masterclass, specifically tailored for Real Estate industry. This project required a seamless blend of live presentation and informative 2D motion graphics to explain technical concepts like keyword research, biddin stratigies and campaign budgeting.",
+                tags: ["2D motion Graphics", "After Effects", "Dynamic Typography", "Sound design"],
+                type: "video",
+                filterCategory: "video",
+                thumbnail: "data:2979f77b-514f-4a24-9b2b-f57e6a70da08.jpg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='grad5' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ff0080;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2300fff5;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23grad5)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='48' fill='white' text-anchor='middle' dominant-baseline='middle'%3EFitness Reels%3C/text%3E%3C/svg%3E",
+                fullDescription: "Engineered a comprehensive introductory video for a Google Ads lead Generation Masterclass, specifically tailored for Real Estate industry. This project required a seamless blend of live presentation and informative 2D motion graphics to explain technical concepts like keyword research, biddin stratigies and campaign budgeting. The edit emphasizes clarity through visual hierarchy, using bold typography and proven case study graphics to build authority. By incorporating a varity of B-roll and screen capture overlays, the final product transforms a complex digital marketing tutorial into a highly engaging and professional learning experience",
+                client: "FitLife Athletics (Concept)",
+                duration: "2 minutes",
+                year: "2025",
+                videoUrl: "2 (2).mp4"
+            },
+            {
+                id: 6,
+                title: "CryptoVerse NFT Marketplace",
+                category: "Web Development",
+                description: "A futuristic NFT marketplace featuring 3D gallery views, real-time blockchain integration, and immersive user experience design.",
+                tags: ["Web3", "Three.js", "Solidity", "React"],
+                type: "web",
+                filterCategory: "concept",
+                thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='grad6' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2300fff5;stop-opacity:1' /%3E%3Cstop offset='50%25' style='stop-color:%23b026ff;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%2300fff5;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23grad6)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='48' fill='white' text-anchor='middle' dominant-baseline='middle'%3ECryptoVerse NFT%3C/text%3E%3C/svg%3E",
+                fullDescription: "Designed and developed a cutting-edge NFT marketplace with immersive 3D gallery experiences. Users can walk through virtual exhibition spaces to view NFTs in a museum-like environment. Implemented wallet connection, smart contract integration for minting and trading, real-time price updates, and advanced filtering systems. Featured particle effects, ambient lighting, and smooth camera transitions for a premium feel. The platform showcased technical excellence in merging Web3 functionality with exceptional UX design.",
+                client: "CryptoVerse (Concept)",
+                duration: "8 weeks",
+                year: "2025",
+                videoUrl: null
+            },
+            {
+                id: 7,
+                title: "The Reality of Startups",
+                category: "Video Editing",
+                description: "This edit juxtaposes the glamorized view if the startups cukture with the stark reality of 99% of founders who dont succeed.By using a faast-paced motion graphics , the video highliights how AI is changing the landcapes where execution is no konger a unnique advantage.",
+                tags: ["Motion Graphics", "Video editing ", "Visualstorytelling ", "After Effects"],
+                type: "video",
+                filterCategory: "video",
+                thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='grad7' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23b026ff;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff0080;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23grad7)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='48' fill='white' text-anchor='middle' dominant-baseline='middle'%3EMovie Trailer%3C/text%3E%3C/svg%3E",
+                fullDescription: " In this 15 second video , I fcused on highl energy transitions and abstract motion graphics to mirror the volatility of the tech world. The edit demonstrates polished visual execution.",
+                client: "Relatity checkup(Youtube)",
+                duration: "2 weeks",
+                year: "2024",
+                videoUrl: "2.mp4"
+            },
+            {
+                id: 8,
+                title: "Product Commercial - Tech Gadget",
+                category: "Video Editing",
+                description: "A sleek product commercial featuring dynamic transitions, macro shots, and modern motion graphics for a tech startup.",
+                tags: ["After Effects", "Premiere Pro", "Product Videography", "Motion Graphics"],
+                type: "video",
+                filterCategory: "video",
+                thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='grad8' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2300fff5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff0080;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23grad8)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='42' fill='white' text-anchor='middle' dominant-baseline='middle'%3ETech Commercial%3C/text%3E%3C/svg%3E",
+                fullDescription: "Produced a 30-second product commercial for a new smart device launch. Combined stunning macro product shots with sleek motion graphics and animated text overlays. The edit emphasized key product features through visual storytelling, utilizing speed ramps, smooth transitions, and synchronized audio. Added particle effects and light leaks for a premium, high-tech aesthetic. The commercial achieved 500K views on social media and contributed to a successful product launch.",
+                client: "TechGear Innovations (Concept)",
+                duration: "3 weeks",
+                year: "2025",
+                videoUrl: "3 (1).mp4"
+            },
+
+             {
+                id: 4,
+                title: " The Shift In Global Currency",
+                category: "Finance and Geopolitics",
+                description: "This video explains the recent geopolitical shifts regarding the US dollar's supremacy. It highlights Saudi Arabia’s decision to end its exclusive oil-for-dollars deal with the US, moving toward a multi-currency model, and Russia's efforts to decouple its stock market from US dollar dependency.",
+                tags: ["Finance", "Geopolitics", "USdollar", "Russia"],
+                type: "video",
+                filterCategory: "video",
+                thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='grad4' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23b026ff;stop-opacity:1' /%3E%3Cstop offset='50%25' style='stop-color:%2300fff5;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff0080;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23grad4)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='48' fill='white' text-anchor='middle' dominant-baseline='middle'%3ENeuroAI Launch%3C/text%3E%3C/svg%3E",
+                fullDescription: "In this high-paced explainer, I transformed complex geopolitical developments into a visually engaging 34-second short. The edit focuses on the shifting global economic landscape, specifically the historic move by Saudi Arabia and Russia to decouple from the US Dollar. Through dynamic motion graphics, kinetic typography, and compelling B-roll footage, the video breaks down the implications of these changes for global markets. The narrative is supported by a blend of authoritative voiceover and sound design that emphasizes the gravity of the situation. This project showcases my ability to distill intricate topics into digestible, impactful content suitable for platforms like YouTube and social media.",
+                client: "Educational influencer(Youtube)",
+                duration: "34 seconds",
+                year: "2026",
+                videoUrl: "2 (1).mp4"
+            },
+             {
+                id: 7,
+                title: "The Reality of Startups",
+                category: "Video Editing",
+                description: "This edit juxtaposes the glamorized view if the startups cukture with the stark reality of 99% of founders who dont succeed.By using a faast-paced motion graphics , the video highliights how AI is changing the landcapes where execution is no konger a unnique advantage.",
+                tags: ["Motion Graphics", "Video editing ", "Visualstorytelling ", "After Effects"],
+                type: "motion",
+                filterCategory: "motion",
+                thumbnail: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='grad7' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23b026ff;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23ff0080;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='800' height='600' fill='url(%23grad7)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='48' fill='white' text-anchor='middle' dominant-baseline='middle'%3EMovie Trailer%3C/text%3E%3C/svg%3E",
+                fullDescription: " In this 15 second video , I fcused on highl energy transitions and abstract motion graphics to mirror the volatility of the tech world. The edit demonstrates polished visual execution.",
+                client: "Relatity checkup(Youtube)",
+                duration: "2 weeks",
+                year: "2024",
+                videoUrl: "2.mp4"
+            },
+        ];
+        
+        // Three.js Scene
+        let scene, camera, renderer, particles;
+        
+        function initThree() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+            
+            // Create particles
+            const geometry = new THREE.BufferGeometry();
+            const particleCount = 1000;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            
+            const color1 = new THREE.Color(0x00fff5);
+            const color2 = new THREE.Color(0xb026ff);
+            const color3 = new THREE.Color(0xff0080);
+            
+            for (let i = 0; i < particleCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 20;
+                positions[i + 1] = (Math.random() - 0.5) * 20;
+                positions[i + 2] = (Math.random() - 0.5) * 20;
+                
+                const colorChoice = Math.random();
+                const chosenColor = colorChoice < 0.33 ? color1 : colorChoice < 0.66 ? color2 : color3;
+                colors[i] = chosenColor.r;
+                colors[i + 1] = chosenColor.g;
+                colors[i + 2] = chosenColor.b;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.05,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+            
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+            
+            // Mouse movement interaction
+            let mouseX = 0, mouseY = 0;
+            
+            document.addEventListener('mousemove', (event) => {
+                mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+                mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            });
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                particles.rotation.x += 0.0005;
+                particles.rotation.y += 0.0005;
+                
+                // Mouse interaction
+                particles.rotation.x += mouseY * 0.001;
+                particles.rotation.y += mouseX * 0.001;
+                
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+        
+        // Custom Cursor
+        const cursor = document.querySelector('.cursor');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        
+        document.querySelectorAll('a, button, .work-item, .service-card').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+        
+        // Navigation scroll effect
+        const navbar = document.getElementById('navbar');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+        
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // Populate work grid
+        function populateWork(filter = 'all') {
+            const workGrid = document.getElementById('workGrid');
+            workGrid.innerHTML = '';
+            
+            const filteredItems = filter === 'all' 
+                ? portfolioItems 
+                : portfolioItems.filter(item => item.filterCategory === filter);
+            
+            filteredItems.forEach(item => {
+                const workItem = document.createElement('div');
+                workItem.className = 'work-item';
+                if (item.type === 'video' || item.type === 'motion') {
+                    workItem.classList.add('video-project');
+                }
+                workItem.onclick = () => openModal(item.id);
+                
+                workItem.innerHTML = `
+                    <div class="work-thumbnail">
+                        <img src="${item.thumbnail}" alt="${item.title}">
+                    </div>
+                    <div class="work-info">
+                        <div class="work-category">${item.category}</div>
+                        <h3>${item.title}</h3>
+                        <p>${item.description}</p>
+                        <div class="work-tags">
+                            ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                workGrid.appendChild(workItem);
+            });
+            
+            // Reinitialize scroll animations for new items
+            setTimeout(() => {
+                const workItems = gsap.utils.toArray('.work-item');
+                if (workItems.length > 0) {
+                    workItems.forEach((item, i) => {
+                        gsap.from(item, {
+                            opacity: 0,
+                            scale: 0.9,
+                            duration: 0.5,
+                            delay: i * 0.05,
+                            ease: 'power3.out'
+                        });
+                    });
+                }
+            }, 50);
+        }
+        
+        // Filter functionality
+        function initFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active state
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Filter projects
+                    const filter = btn.getAttribute('data-filter');
+                    populateWork(filter);
+                });
+            });
+        }
+        
+        // Modal functions
+        function openModal(id) {
+            const item = portfolioItems.find(p => p.id === id);
+            const modal = document.getElementById('projectModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            const heroContent = item.videoUrl 
+                ? `<iframe src="${item.videoUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width: 100%; height: 100%; border-radius: 30px;"></iframe>`
+                : `<img src="${item.thumbnail}" alt="${item.title}">`;
+            
+            modalContent.innerHTML = `
+                <div class="modal-hero">
+                    ${heroContent}
+                </div>
+                <div class="modal-header">
+                    <h2>${item.title}</h2>
+                    <div class="modal-meta">
+                        <div class="modal-meta-item">
+                            <strong>CLIENT</strong>
+                            ${item.client}
+                        </div>
+                        <div class="modal-meta-item">
+                            <strong>CATEGORY</strong>
+                            ${item.category}
+                        </div>
+                        <div class="modal-meta-item">
+                            <strong>DURATION</strong>
+                            ${item.duration}
+                        </div>
+                        <div class="modal-meta-item">
+                            <strong>YEAR</strong>
+                            ${item.year}
+                        </div>
+                    </div>
+                    <div class="work-tags" style="margin-bottom: 2rem;">
+                        ${item.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                </div>
+                <div class="modal-description">
+                    ${item.fullDescription}
+                </div>
+            `;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            gsap.from('.modal-content', {
+                opacity: 0,
+                y: 50,
+                duration: 0.5,
+                ease: 'power3.out'
+            });
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('projectModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Contact form
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+            
+            // Create mailto link
+            const subject = encodeURIComponent(`Project Inquiry: ${data.project}`);
+            const body = encodeURIComponent(`Name: ${data.name}\nEmail: ${data.email}\n\nProject Type: ${data.project}\n\nMessage:\n${data.message}`);
+            window.location.href = `mailto:561814123@gmail.com?subject=${subject}&body=${body}`;
+            
+            // Reset form
+            e.target.reset();
+            
+            // Show success message
+            alert('Thank you! Your message has been sent. I\'ll get back to you soon!');
+        });
+        
+        // GSAP Scroll Animations
+        function initScrollAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Animate sections on scroll
+            gsap.utils.toArray('section').forEach(section => {
+                const header = section.querySelector('.section-header');
+                if (header) {
+                    gsap.from(header, {
+                        scrollTrigger: {
+                            trigger: section,
+                            start: 'top 80%',
+                            toggleActions: 'play none none reverse'
+                        },
+                        opacity: 0,
+                        y: 50,
+                        duration: 1,
+                        ease: 'power3.out'
+                    });
+                }
+            });
+            
+            // Animate service cards
+            const serviceCards = gsap.utils.toArray('.service-card');
+            if (serviceCards.length > 0) {
+                serviceCards.forEach((card, i) => {
+                    gsap.from(card, {
+                        scrollTrigger: {
+                            trigger: card,
+                            start: 'top 85%',
+                            toggleActions: 'play none none reverse'
+                        },
+                        opacity: 0,
+                        y: 50,
+                        duration: 0.8,
+                        delay: i * 0.1,
+                        ease: 'power3.out'
+                    });
+                });
+            }
+            
+            // Animate work items
+            const workItems = gsap.utils.toArray('.work-item');
+            if (workItems.length > 0) {
+                workItems.forEach((item, i) => {
+                    gsap.from(item, {
+                        scrollTrigger: {
+                            trigger: item,
+                            start: 'top 85%',
+                            toggleActions: 'play none none reverse'
+                        },
+                        opacity: 0,
+                        scale: 0.9,
+                        duration: 0.8,
+                        delay: i * 0.1,
+                        ease: 'power3.out'
+                    });
+                });
+            }
+            
+            // Animate stats
+            const statItems = gsap.utils.toArray('.stat-item');
+            if (statItems.length > 0) {
+                statItems.forEach((stat, i) => {
+                    gsap.from(stat, {
+                        scrollTrigger: {
+                            trigger: stat,
+                            start: 'top 85%',
+                            toggleActions: 'play none none reverse'
+                        },
+                        opacity: 0,
+                        scale: 0.8,
+                        duration: 0.6,
+                        delay: i * 0.1,
+                        ease: 'back.out(1.7)'
+                    });
+                });
+            }
+            
+            // Animate process steps
+            const processSteps = gsap.utils.toArray('.process-step');
+            if (processSteps.length > 0) {
+                processSteps.forEach((step, i) => {
+                    gsap.from(step, {
+                        scrollTrigger: {
+                            trigger: step,
+                            start: 'top 85%',
+                            toggleActions: 'play none none reverse'
+                        },
+                        opacity: 0,
+                        x: i % 2 === 0 ? -50 : 50,
+                        duration: 0.8,
+                        ease: 'power3.out'
+                    });
+                });
+            }
+            
+            // Animate skill orbs
+            const skillOrbs = gsap.utils.toArray('.skill-orb');
+            if (skillOrbs.length > 0) {
+                skillOrbs.forEach((orb, i) => {
+                    gsap.from(orb, {
+                        scrollTrigger: {
+                            trigger: '.skills-visual',
+                            start: 'top 80%',
+                            toggleActions: 'play none none reverse'
+                        },
+                        opacity: 0,
+                        scale: 0,
+                        duration: 0.8,
+                        delay: i * 0.15,
+                        ease: 'back.out(1.7)'
+                    });
+                });
+            }
+        }
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            initThree();
+            populateWork();
+            initFilters();
+            
+            // Initialize scroll animations after a short delay to ensure DOM is ready
+            setTimeout(() => {
+                initScrollAnimations();
+            }, 100);
+            
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hide');
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
